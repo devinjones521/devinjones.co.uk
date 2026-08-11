@@ -179,15 +179,68 @@
 
   .foot { padding-top: 1.6rem; color: var(--faint); display: flex; flex-wrap: wrap; gap: .3rem 2rem; }
 
+  .taphint { display: none; }
+
   @media (max-width: 52rem) {
     body { font-size: 13px; }
-    .work { grid-template-columns: 1fr; gap: 1.5rem; }
+    .sheet { padding: 0 1rem 3rem; }
+
+    /* Grid children default to min-width:auto and refuse to shrink below their
+       content, which is what pushes the page sideways. Nothing here may do that. */
+    .kv, .metric { grid-template-columns: 1fr; gap: 0; }
+    .kv .k, .metric .m-k { color: var(--faint); margin-top: .55rem; }
+    .kv .v, .metric .m-v, .intro, .detail .note, .detail .what {
+      min-width: 0; overflow-wrap: anywhere;
+    }
+
+    /* The crontab expression must never be squeezed into a narrow column - it
+       breaks one character per line. Expression and badge share row 1; the
+       gloss spans row 2 underneath. */
+    .job {
+      grid-template-columns: 1fr auto;
+      gap: .15rem .75rem;
+      padding: 1.7rem 0 .3rem;
+    }
+    .job .expr  { grid-column: 1; grid-row: 1; }
+    .nowtag     { grid-column: 2; grid-row: 1; }
+    .job .gloss { grid-column: 1 / -1; grid-row: 2; min-width: 0; overflow-wrap: anywhere; }
+
+    /* Fixed-width comment lines cannot hold at this width. Let them wrap, and
+       hang the continuation under the text rather than under the hash. */
+    .comment p {
+      padding-left: 1.15em; text-indent: -1.15em;
+      min-width: 0; overflow-wrap: anywhere;
+    }
+
+    /* minmax(0, 1fr), never a bare 1fr: a bare track keeps min-width:auto, so the
+       column cannot shrink below the intrinsic width of the screenshots and the
+       whole page ends up wider than the phone. */
+    .work { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
+    .preview, .frame, .detail, .index { min-width: 0; }
     .preview { position: static; }
-    .kv, .metric, .job { grid-template-columns: 1fr; gap: 0; }
-    .job { grid-template-columns: 1.1rem 1fr; }
-    .job .gloss { grid-column: 2; }
-    .kv .k, .metric .m-k { color: var(--faint); margin-top: .5rem; }
+
+    /* Size the frame from the image instead of a fixed ratio, so portrait and
+       landscape screenshots both sit tight with no letterboxing. */
+    .frame { aspect-ratio: auto; }
+    .frame figure { position: static; display: none; }
+    .frame figure[data-on="true"] { display: flex; }
+    .frame img { max-height: 62vh; }
+    .frame svg { height: 46vw; }
+
     .detail { min-height: 0; }
+
+    /* No hover on touch, so the selected row needs to be visible on its own,
+       and the indent must not come from padding - that changes row height. */
+    .pick { padding: .85rem 0 .9rem; }
+    .pick[aria-current="true"] {
+      transform: none;
+      box-shadow: inset 2px 0 0 var(--on);
+    }
+
+    .taphint {
+      display: block; margin: .9rem 0 0;
+      font-size: .72rem; color: var(--faint);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -261,6 +314,8 @@
         <li><button class="pick" data-p="homereform" aria-current="false"><span class="idx">05</span><span><span class="pick-name">Home Reform</span><span class="pick-sub">a design studio, moved off squarespace &middot; 2026</span></span></button></li>
         <li><button class="pick" data-p="fines" aria-current="false"><span class="idx">06</span><span><span class="pick-name">Fined, Lad</span><span class="pick-sub">a fines court for a stag do, and one for golf &middot; 2026</span></span></button></li>
       </ul>
+
+      <p class="taphint">tap any project to see it</p>
 
       <div class="preview">
         <div class="frame">
