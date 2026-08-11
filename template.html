@@ -12,6 +12,10 @@
     --blue:  #1F5FA8;
     --amber: #8F5411;
     --mono:  ui-monospace, "Cascadia Mono", "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    /* Mono is the page's default and marks anything structural: the crontab, keys,
+       metrics, project names, and the # comment lines. Sans is used only where the
+       text is genuinely prose, so mono carries meaning instead of being the default. */
+    --sans:  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -114,7 +118,8 @@
   }
   .pick .pick-sub {
     display: block; margin-top: .22rem;
-    font-size: .715rem; letter-spacing: .015em; line-height: 1.45;
+    font-family: var(--sans);
+    font-size: .78rem; letter-spacing: 0; line-height: 1.45;
     font-weight: 400; color: var(--faint);
   }
   .pick:hover { color: var(--dim); }
@@ -125,8 +130,9 @@
 
   .intro {
     margin: 0; padding: 0 0 1.7rem;
-    max-width: 74ch; color: var(--dim);
-    font-size: .95rem; line-height: 1.7;
+    max-width: 68ch; color: var(--dim);
+    font-family: var(--sans);
+    font-size: 1.02rem; line-height: 1.62;
   }
 
   .preview { position: sticky; top: 1.5rem; }
@@ -149,7 +155,11 @@
   .detail { padding-top: 1.1rem; min-height: 12rem; }
   .detail > div { display: none; }
   .detail > div[data-on="true"] { display: block; animation: rise .3s ease both; }
-  .detail .what { color: var(--ink); }
+  .detail .what {
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1.02rem; line-height: 1.5;
+  }
   .detail .note { color: var(--faint); margin: .7rem 0 0; max-width: 62ch; }
   .detail .note b { color: var(--dim); font-weight: 400; }
   .detail .foot2 {
