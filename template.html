@@ -107,7 +107,11 @@
     padding: .7rem 0 .78rem;
     display: grid; grid-template-columns: 3.2rem 1fr;
     align-items: baseline; gap: 0 .6rem;
-    transition: color .2s ease, padding-left .2s ease;
+    /* Indent the active row with transform, never padding or margin. Padding narrows
+       the content box, which re-wraps the longer descriptions onto a second line and
+       changes the row height - that shifts rows under the pointer and the hover
+       oscillates between two entries. A transform cannot reflow. */
+    transition: color .2s ease, transform .2s ease;
   }
   .pick .idx { font-size: .58rem; letter-spacing: .1em; color: var(--faint); }
   .pick .pick-name {
@@ -124,7 +128,7 @@
   }
   .pick:hover { color: var(--dim); }
   .pick:hover .pick-sub { color: var(--dim); }
-  .pick[aria-current="true"] { color: var(--ink); padding-left: .5rem; }
+  .pick[aria-current="true"] { color: var(--ink); transform: translateX(.5rem); }
   .pick[aria-current="true"] .idx { color: var(--on); }
   .pick[aria-current="true"] .pick-sub { color: var(--dim); }
 
@@ -231,9 +235,9 @@
       <p># countries is the job, and most of that is training, documentation,</p>
       <p># and making the case to people who do not report to me.</p>
       <p>#</p>
-      <p># the last programme reported off a python pipeline i wrote and then</p>
-      <p># handed to a team of analysts so it stopped being mine. one of its</p>
-      <p># projections moved a resourcing decision at executive committee.</p>
+      <p># the last programme reported off a python pipeline i wrote, then</p>
+      <p># handed to a team of analysts so it stopped being mine. analysis</p>
+      <p># like that changes decisions at executive committee level.</p>
     </div>
   </section>
 
