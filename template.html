@@ -1,0 +1,427 @@
+<title>devin jones</title>
+
+<style>
+  :root {
+    --bg:    #EDF0F4;
+    --panel: #FFFFFF;
+    --sunk:  #E3E7ED;
+    --ink:   #10151C;
+    --dim:   #56626F;
+    --faint: #8C96A3;
+    --line:  #D6DCE4;
+    --blue:  #1F5FA8;
+    --amber: #8F5411;
+    --mono:  ui-monospace, "Cascadia Mono", "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11151B; --panel: #171D25; --sunk: #0C1015; --ink: #DEE6F0;
+      --dim: #8E9BAC; --faint: #616E7D; --line: #232B35;
+      --blue: #74ACE0; --amber: #DBA260;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11151B; --panel: #171D25; --sunk: #0C1015; --ink: #DEE6F0;
+    --dim: #8E9BAC; --faint: #616E7D; --line: #232B35;
+    --blue: #74ACE0; --amber: #DBA260;
+  }
+
+  [data-mode="weekday"] { --on: var(--blue); }
+  [data-mode="weekend"] { --on: var(--amber); }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .sheet { max-width: 64rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
+  a { color: var(--on); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 1px solid var(--on); outline-offset: 3px; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+  /* ---- head ---- */
+  .head {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    justify-content: space-between; gap: .4rem 2rem; padding: 2.5rem 0 1.1rem;
+  }
+  .name { font-size: 1.35rem; letter-spacing: -.02em; margin: 0; font-weight: 600; }
+  .head .meta { color: var(--faint); font-size: .8rem; }
+
+  /* ---- crontab section headers ---- */
+  .job {
+    margin: 0; padding: 1.9rem 0 .3rem;
+    font: inherit; font-weight: 400;
+    color: var(--on);
+    display: grid; grid-template-columns: 8.5rem 1fr auto;
+    align-items: baseline; gap: 0 1rem;
+  }
+  .job .expr { font-weight: 600; letter-spacing: .02em; }
+  .job .gloss { font-size: .8rem; color: var(--dim); }
+  .nowtag {
+    font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--on); border: 1px solid currentColor;
+    padding: .12rem .45rem .16rem; white-space: nowrap;
+  }
+  .nowtag[hidden] { display: none; }
+  .caret {
+    display: inline-block; width: .5em; height: 1em; margin-left: .1em;
+    background: currentColor; vertical-align: -.15em; animation: blink 1.2s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .panel { padding: 1.4rem 0 0; }
+  @keyframes rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+  /* ---- weekday ---- */
+  .kv { display: grid; grid-template-columns: 8.5rem 1fr; gap: 0 1rem; padding: .12rem 0; }
+  .kv .k { color: var(--faint); }
+  .kv .v .sep { color: var(--faint); padding: 0 .35em; }
+  .block { margin: 0 0 1.9rem; }
+  .metric { display: grid; grid-template-columns: 15rem 1fr; gap: 0 1rem; padding: .12rem 0; }
+  .metric .m-k { color: var(--dim); }
+  .metric .m-v { color: var(--on); font-variant-numeric: tabular-nums; }
+  .comment { color: var(--faint); }
+  .comment p { margin: 0; max-width: 68ch; }
+
+  /* ---- weekend: big-type index + preview ---- */
+  .work { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 0 3rem; align-items: start; }
+
+  .index { list-style: none; margin: 0; padding: 0; }
+  .index li { border-bottom: 1px solid var(--line); }
+  .index li:first-child { border-top: 1px solid var(--line); }
+  .pick {
+    appearance: none; background: none; border: 0; width: 100%; cursor: pointer;
+    font-family: var(--mono);
+    color: var(--faint);
+    text-align: left;
+    padding: .7rem 0 .78rem;
+    display: grid; grid-template-columns: 3.2rem 1fr;
+    align-items: baseline; gap: 0 .6rem;
+    transition: color .2s ease, padding-left .2s ease;
+  }
+  .pick .idx { font-size: .58rem; letter-spacing: .1em; color: var(--faint); }
+  .pick .pick-name {
+    display: block;
+    font-size: clamp(1.2rem, 3.3vw, 1.85rem);
+    font-weight: 600; letter-spacing: -.035em;
+    text-transform: uppercase; line-height: 1.15;
+  }
+  .pick .pick-sub {
+    display: block; margin-top: .22rem;
+    font-size: .715rem; letter-spacing: .015em; line-height: 1.45;
+    font-weight: 400; color: var(--faint);
+  }
+  .pick:hover { color: var(--dim); }
+  .pick:hover .pick-sub { color: var(--dim); }
+  .pick[aria-current="true"] { color: var(--ink); padding-left: .5rem; }
+  .pick[aria-current="true"] .idx { color: var(--on); }
+  .pick[aria-current="true"] .pick-sub { color: var(--dim); }
+
+  .intro {
+    margin: 0; padding: 0 0 1.7rem;
+    max-width: 74ch; color: var(--dim);
+    font-size: .95rem; line-height: 1.7;
+  }
+
+  .preview { position: sticky; top: 1.5rem; }
+  .frame {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--sunk);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .frame figure {
+    position: absolute; inset: 0; margin: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .35s ease;
+  }
+  .frame figure[data-on="true"] { opacity: 1; }
+  .frame img { max-width: 100%; max-height: 100%; display: block; }
+  .frame svg { width: 100%; height: 100%; }
+
+  .detail { padding-top: 1.1rem; min-height: 12rem; }
+  .detail > div { display: none; }
+  .detail > div[data-on="true"] { display: block; animation: rise .3s ease both; }
+  .detail .what { color: var(--ink); }
+  .detail .note { color: var(--faint); margin: .7rem 0 0; max-width: 62ch; }
+  .detail .note b { color: var(--dim); font-weight: 400; }
+  .detail .foot2 {
+    margin-top: .9rem; display: flex; flex-wrap: wrap; gap: .3rem 1.5rem;
+    color: var(--faint); font-size: .78rem;
+  }
+  .detail .st { color: var(--on); }
+  .detail .st .dot {
+    display: inline-block; width: .45em; height: .45em; margin-right: .5em;
+    vertical-align: .1em; background: currentColor;
+  }
+  .detail .st.off { color: var(--faint); }
+
+  .foot { padding-top: 1.6rem; color: var(--faint); display: flex; flex-wrap: wrap; gap: .3rem 2rem; }
+
+  @media (max-width: 52rem) {
+    body { font-size: 13px; }
+    .work { grid-template-columns: 1fr; gap: 1.5rem; }
+    .preview { position: static; }
+    .kv, .metric, .job { grid-template-columns: 1fr; gap: 0; }
+    .job { grid-template-columns: 1.1rem 1fr; }
+    .job .gloss { grid-column: 2; }
+    .kv .k, .metric .m-k { color: var(--faint); margin-top: .5rem; }
+    .detail { min-height: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<div class="sheet" id="root" data-mode="weekday">
+
+
+  <div class="head">
+    <h1 class="name">devin jones</h1>
+    <span class="meta">london</span>
+  </div>
+
+  <p class="intro">Eleven years turning regulatory expectations into something a large bank can
+  actually execute &mdash; Deutsche Bank, then Citi, where I look after controls governance for the
+  Services business. At weekends I build software and host it myself. What I learn building it ends
+  up back in the day job. Nearly everything below was built this year.</p>
+
+  <hr>
+
+  <!-- ================= WEEKDAY ================= -->
+  <h2 class="job" data-mode="weekday" id="h-weekday">
+    <span class="expr">0 9 * * 1-5</span>
+    <span class="gloss">the job &mdash; monday to friday, at 09:00</span>
+    <span class="nowtag" data-when="weekday" hidden>running now</span>
+  </h2>
+  <section class="panel" id="p-weekday" data-mode="weekday" aria-labelledby="h-weekday">
+    <div class="block">
+      <div class="kv"><span class="k">role</span><span class="v">svp, controls governance &amp; oversight</span></div>
+      <div class="kv"><span class="k">org</span><span class="v">citi services<span class="sep">&middot;</span>london<span class="sep">&middot;</span>since 2022</span></div>
+      <div class="kv"><span class="k">scope</span><span class="v">14 global assessment units<span class="sep">&middot;</span>team of 12<span class="sep">&middot;</span>90+ countries</span></div>
+      <div class="kv"><span class="k">before</span><span class="v">deutsche bank 2015&ndash;2022<span class="sep">&middot;</span>capgemini invent 2018</span></div>
+    </div>
+
+    <div class="block">
+      <div class="metric"><span class="m-k">controls.rationalised</span><span class="m-v">70,000 &rarr; 10,000</span></div>
+      <div class="metric"><span class="m-k">sla.adherence</span><span class="m-v">40% &rarr; 98%</span></div>
+      <div class="metric"><span class="m-k">units.consolidated</span><span class="m-v">1,400 &rarr; 14 &rarr; 7</span></div>
+      <div class="metric"><span class="m-k">practitioners.trained</span><span class="m-v">150</span></div>
+    </div>
+
+    <div class="block comment">
+      <p># writing the framework is the easy part. adoption across ninety-odd</p>
+      <p># countries is the job, and most of that is training, documentation,</p>
+      <p># and making the case to people who do not report to me.</p>
+      <p>#</p>
+      <p># the last programme reported off a python pipeline i wrote and then</p>
+      <p># handed to a team of analysts so it stopped being mine. one of its</p>
+      <p># projections moved a resourcing decision at executive committee.</p>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ================= WEEKEND ================= -->
+  <h2 class="job" data-mode="weekend" id="h-weekend">
+    <span class="expr">0 11 * * 6,0</span>
+    <span class="gloss">the habit &mdash; saturday and sunday, at 11:00</span>
+    <span class="nowtag" data-when="weekend" hidden>running now</span>
+  </h2>
+  <section class="panel" id="p-weekend" data-mode="weekend" aria-labelledby="h-weekend">
+    <div class="work">
+
+      <ul class="index" id="index">
+        <li><button class="pick" data-p="laststand" aria-current="true"><span class="idx">01</span><span><span class="pick-name">Last Stand</span><span class="pick-sub">tower defence, 5,000 lines of vanilla js &middot; 2026 &middot; playable</span></span></button></li>
+        <li><button class="pick" data-p="roboroi" aria-current="false"><span class="idx">02</span><span><span class="pick-name">RoboROI</span><span class="pick-sub">robot cost model where every number carries a source &middot; 2026</span></span></button></li>
+        <li><button class="pick" data-p="together" aria-current="false"><span class="idx">03</span><span><span class="pick-name">Together</span><span class="pick-sub">ai coach for couples; the crisis check runs first &middot; 2026</span></span></button></li>
+        <li><button class="pick" data-p="alwayson" aria-current="false"><span class="idx">04</span><span><span class="pick-name">Always&#8209;On</span><span class="pick-sub">a coding agent i drive from my phone &middot; 2026</span></span></button></li>
+        <li><button class="pick" data-p="homereform" aria-current="false"><span class="idx">05</span><span><span class="pick-name">Home Reform</span><span class="pick-sub">a design studio, moved off squarespace &middot; 2026</span></span></button></li>
+        <li><button class="pick" data-p="fines" aria-current="false"><span class="idx">06</span><span><span class="pick-name">Fined, Lad</span><span class="pick-sub">a fines court for a stag do, and one for golf &middot; 2026</span></span></button></li>
+      </ul>
+
+      <div class="preview">
+        <div class="frame">
+          <figure data-f="laststand" data-on="true"><img src="{{IMG_LASTSTAND}}" alt="Last Stand at wave 41: a serpentine barricade maze filling the field, the horde's route traced in amber, a napalm fire burning at a choke point"></figure>
+          <figure data-f="roboroi"><img src="{{IMG_ROBOROI}}" alt="RoboROI assumptions and sources page, listing which cost defaults are not applied to the scenario and why"></figure>
+          <figure data-f="together"><img src="{{IMG_TOGETHER}}" alt="Together app home screen showing private chat, couple session, and the day's question"></figure>
+          <figure data-f="alwayson">
+            <svg viewBox="0 0 400 300" role="img" aria-label="Diagram: phone sends a voice note through Telegram to an agent on a server, which asks for approval before writing">
+              <g fill="none" stroke="currentColor" stroke-width="1" opacity=".55">
+                <rect x="26" y="112" width="76" height="76"/>
+                <rect x="162" y="112" width="76" height="76"/>
+                <rect x="298" y="112" width="76" height="76"/>
+                <path d="M102 150 L162 150"/>
+                <path d="M238 150 L298 150"/>
+                <path d="M336 188 L336 236 L64 236 L64 188" stroke-dasharray="3 3"/>
+              </g>
+              <g fill="currentColor" opacity=".55">
+                <path d="M156 146 l8 4 -8 4 z"/>
+                <path d="M292 146 l8 4 -8 4 z"/>
+                <path d="M60 194 l4 -8 4 8 z"/>
+              </g>
+              <g fill="currentColor" font-family="ui-monospace, monospace" font-size="9" text-anchor="middle">
+                <text x="64"  y="146" opacity=".9">phone</text>
+                <text x="64"  y="160" opacity=".5">voice</text>
+                <text x="200" y="146" opacity=".9">telegram</text>
+                <text x="200" y="160" opacity=".5">whisper</text>
+                <text x="336" y="146" opacity=".9">vps</text>
+                <text x="336" y="160" opacity=".5">agent</text>
+                <text x="200" y="250" opacity=".5">approve before it writes</text>
+              </g>
+            </svg>
+          </figure>
+          <figure data-f="homereform"><img src="{{IMG_HOMEREFORM}}" alt="The Home Reform editorial homepage prototype: deep plum panel with the studio wordmark beside a photograph of a warm ochre bedroom"></figure>
+          <figure data-f="fines"><img src="{{IMG_FINES}}" alt="Fined, Lad title card: a set of scales above the words the stag do fines court"></figure>
+        </div>
+
+        <div class="detail">
+          <div data-d="laststand" data-on="true">
+            <p class="what">A maze&#8209;building zombie tower defence. Endless waves, one spawn point, forever.</p>
+            <p class="note"># built around one complaint: these games get frustrating when difficulty
+            arrives as a <em>second</em> spawn point. so this one never opens one. <b>wave 100 comes
+            through the same gap as wave 1</b> — the curve moves through what walks in, never through
+            where it walks in from. nothing you build can be destroyed, and any placement that would
+            seal the route is refused, so you cannot softlock yourself.</p>
+            <p class="note"># a single flow&#8209;field BFS from the camp replaces per&#8209;zombie
+            pathing. repathing 130 zombies after you drop a wall then costs nothing, "would this
+            placement seal it?" becomes "is the spawn still reachable?", and the route preview is just
+            walking downhill. <b>no dependencies, no build step</b>, and the whole thing runs headless
+            in node for the test suite.</p>
+            <div class="foot2">
+              <span class="st"><span class="dot"></span>playable</span>
+              <span><a href="https://devinjones521.github.io/last-stand/">play it &rarr;</a></span>
+              <span><a href="https://github.com/devinjones521/last-stand">source &rarr;</a></span>
+            </div>
+            <div class="foot2">
+              <span>vanilla js &middot; canvas 2d &middot; pwa, works offline &middot; ~5,000 lines</span>
+            </div>
+          </div>
+
+          <div data-d="roboroi">
+            <p class="what">Total cost of ownership for humanoid robots. Vendor&#8209;neutral.</p>
+            <p class="note"># two thirds of the five&#8209;year cost came from <b>one number nobody had
+            sourced</b> &mdash; breakeven month 26 with it, month 7 without, and every check had passed
+            green for four days. nothing related a number's provenance to its influence, so i wrote
+            the check that does.</p>
+            <div class="foot2">
+              <span class="st"><span class="dot"></span>in build</span>
+              <span>next.js &middot; express &middot; golden&#8209;master fixtures</span>
+            </div>
+          </div>
+
+          <div data-d="together">
+            <p class="what">An AI relationship coach for couples.</p>
+            <p class="note"># the model is not the hard part. <b>crisis detection runs before the model
+            call, not after.</b> a banned&#8209;word list is enforced by tests rather than a style guide,
+            content is encrypted per couple, and no message body is ever logged.</p>
+            <div class="foot2">
+              <span class="st"><span class="dot"></span>in testing</span>
+              <span>fastapi &middot; supabase &middot; claude &middot; react native</span>
+            </div>
+          </div>
+
+          <div data-d="alwayson">
+            <p class="what">My development environment, operated from a phone.</p>
+            <p class="note"># a coding agent running against project folders on a server. voice note in,
+            work out, and <b>it still asks before it writes</b>. built because most of my building time
+            is twenty minutes and not at a desk.</p>
+            <div class="foot2">
+              <span class="st"><span class="dot"></span>running</span>
+              <span>telegram &middot; whisper &middot; hetzner &middot; rclone</span>
+            </div>
+          </div>
+
+          <div data-d="homereform">
+            <p class="what">A London interior design studio, moved off Squarespace.</p>
+            <p class="note"># the interesting part was sharing a repo with a designer who doesn't write
+            code: <b>hard branch edges</b>, an explicit list of what must never be touched, and
+            production fenced off because editing it takes the public site down.</p>
+            <div class="foot2">
+              <span class="st"><span class="dot"></span>live</span>
+              <span><a href="https://thehomereform.co.uk">thehomereform.co.uk &rarr;</a></span>
+            </div>
+            <div class="foot2">
+              <span>next.js &middot; nginx &middot; pm2 &middot; hetzner</span>
+            </div>
+          </div>
+
+          <div data-d="fines">
+            <p class="what">A fines court for a stag do. And one for a golf four&#8209;ball.</p>
+            <p class="note"># submit a charge, the group votes on severity, the best man delivers the
+            verdict. the golf one runs <b>last man standing</b> &mdash; the fine transfers to whoever
+            offends most recently, which is a surprisingly awkward piece of state. tested by groups
+            who were not gentle.</p>
+            <div class="foot2">
+              <span class="st"><span class="dot"></span>live</span>
+              <span>node &middot; express &middot; sqlite / postgres &middot; react</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr style="margin-top:2.5rem">
+
+  <div class="foot">
+    <span><a href="mailto:devinjones521@gmail.com">devinjones521@gmail.com</a></span>
+    <span><a href="https://linkedin.com/in/devinjones521">linkedin/in/devinjones521</a></span>
+    <span id="now"></span>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // ---- which schedule is running right now ----
+    var today = new Date().getDay();
+    var dayNames = ['sun','mon','tue','wed','thu','fri','sat'];
+    var running = (today === 0 || today === 6) ? 'weekend' : 'weekday';
+
+    var tag = document.querySelector('.nowtag[data-when="' + running + '"]');
+    if (tag) {
+      tag.hidden = false;
+      var caret = document.createElement('span');
+      caret.className = 'caret';
+      caret.setAttribute('aria-hidden', 'true');
+      tag.closest('.job').querySelector('.expr').appendChild(caret);
+    }
+    document.getElementById('now').textContent =
+      '// it is ' + dayNames[today] + ', so the ' +
+      (running === 'weekend' ? 'second' : 'first') + ' one is running';
+
+    // ---- project index ----
+    var picks  = [].slice.call(document.querySelectorAll('.pick'));
+    var figs   = [].slice.call(document.querySelectorAll('.frame figure'));
+    var details= [].slice.call(document.querySelectorAll('.detail > div'));
+
+    function show(key) {
+      picks.forEach(function (p) { p.setAttribute('aria-current', p.dataset.p === key ? 'true' : 'false'); });
+      figs.forEach(function (f) { f.dataset.on = f.dataset.f === key ? 'true' : 'false'; });
+      details.forEach(function (d) { d.dataset.on = d.dataset.d === key ? 'true' : 'false'; });
+    }
+
+    picks.forEach(function (p, i) {
+      p.addEventListener('mouseenter', function () { show(p.dataset.p); });
+      p.addEventListener('focus',      function () { show(p.dataset.p); });
+      p.addEventListener('click',      function () { show(p.dataset.p); });
+      p.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowDown') { next = picks[(i + 1) % picks.length]; }
+        if (e.key === 'ArrowUp')   { next = picks[(i - 1 + picks.length) % picks.length]; }
+        if (!next) { return; }
+        e.preventDefault();
+        next.focus();
+      });
+    });
+
+  })();
+</script>
