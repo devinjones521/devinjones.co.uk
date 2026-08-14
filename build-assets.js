@@ -147,6 +147,28 @@ const card = `
   await page.screenshot({ path: path.join(OUT, 'og.png') });
   console.log('wrote static/og.png');
 
+  // favicon.ico, wrapping the 32px PNG. Browsers request /favicon.ico on their own
+  // whether or not the page links to it, and it is the one icon format nothing
+  // argues with - so it is the safety net under the SVG. An .ico may contain a PNG
+  // directly (Vista onward): 6 byte header, one 16 byte directory entry, then the
+  // PNG bytes, with no re-encoding.
+  const png = fs.readFileSync(path.join(OUT, 'icon-32.png'));
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);   // reserved
+  header.writeUInt16LE(1, 2);   // type 1 = icon
+  header.writeUInt16LE(1, 4);   // one image
+  const entry = Buffer.alloc(16);
+  entry[0] = 32;                // width
+  entry[1] = 32;                // height
+  entry[2] = 0;                 // palette size, 0 = truecolour
+  entry[3] = 0;                 // reserved
+  entry.writeUInt16LE(1, 4);    // colour planes
+  entry.writeUInt16LE(32, 6);   // bits per pixel
+  entry.writeUInt32LE(png.length, 8);
+  entry.writeUInt32LE(22, 12);  // offset: 6 header + 16 entry
+  fs.writeFileSync(path.join(OUT, 'favicon.ico'), Buffer.concat([header, entry, png]));
+  console.log('wrote static/favicon.ico');
+
   await browser.close();
 })().catch((e) => {
   console.error(e);

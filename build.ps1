@@ -61,7 +61,7 @@ $cardAlt = 'devin jones, london - the two crontab lines the site is built around
 # application/json, which Chrome accepts. Fixing it in nginx would mean editing a
 # config that also fronts a client's live site, which is not worth it for this.
 $assets = @(
-  'icon.svg', 'icon-32.png', 'icon-192.png', 'icon-512.png',
+  'favicon.ico', 'icon.svg', 'icon-32.png', 'icon-192.png', 'icon-512.png',
   'icon-maskable-512.png', 'apple-touch-icon.png', 'og.png', 'manifest.json'
 )
 foreach ($a in $assets) {
@@ -79,8 +79,8 @@ $doc = @"
 <meta name="color-scheme" content="light dark">
 
 <link rel="canonical" href="$origin/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
-<link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
 

@@ -1,4 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="devin jones">
+<!-- width and height are load bearing, not decoration. With only a viewBox this SVG
+     has no intrinsic size (Chrome reports naturalWidth 150, the CSS default for a
+     replaced element), and Chrome's favicon pipeline will not rasterise it - the tab
+     comes up blank. An <img> still renders it, because there the CSS supplies a size,
+     so this looks fine everywhere except the one place it is actually used. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="devin jones">
   <!-- The cron asterisk. The whole site is a crontab, and in cron * means "every".
        Drawn as three crossing bars rather than a font glyph so it stays a shape at
        16px instead of turning into a letterform. Geometry is shared with the PNG
