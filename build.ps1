@@ -21,6 +21,7 @@ $map = @{
   '{{IMG_LASTSTAND}}'  = 'laststand.jpg'
   '{{IMG_ROBOROI}}'    = 'roboroi.jpg'
   '{{IMG_TOGETHER}}'   = 'together.jpg'
+  '{{IMG_WORKOUT}}'    = 'workout.jpg'
   '{{IMG_HOMEREFORM}}' = 'homereform.jpg'
   '{{IMG_FINES}}'      = 'fines.jpg'
 }
@@ -46,6 +47,27 @@ $head = $fragment.Substring(0, $cut + $marker.Length)
 $body = $fragment.Substring($cut + $marker.Length)
 
 $description = 'Devin Jones - controls governance in London during the week, and the things I build at weekends.'
+$origin = 'https://devinjones.co.uk'
+$cardAlt = 'devin jones, london - the two crontab lines the site is built around'
+
+# The icons and the share card are the one part of this page that CANNOT be inlined.
+# Everything else is base64 in the HTML, but favicons at fixed sizes, Android home
+# screen icons and og:image all have to be real files at real URLs - no crawler will
+# follow a data: URI. They live in static/ and deploy.sh uploads them alongside.
+#
+# The manifest is .json, not the conventional .webmanifest, on purpose: nginx 1.24
+# on that box has no mime.types entry for .webmanifest, so it would go out as
+# application/octet-stream and Chrome would refuse to parse it. .json maps to
+# application/json, which Chrome accepts. Fixing it in nginx would mean editing a
+# config that also fronts a client's live site, which is not worth it for this.
+$assets = @(
+  'icon.svg', 'icon-32.png', 'icon-192.png', 'icon-512.png',
+  'icon-maskable-512.png', 'apple-touch-icon.png', 'og.png', 'manifest.json'
+)
+foreach ($a in $assets) {
+  $p = Join-Path $root "static\$a"
+  if (-not (Test-Path $p)) { throw "Missing static asset: $p (run build-assets.js to regenerate)" }
+}
 
 $doc = @"
 <!doctype html>
@@ -55,7 +77,33 @@ $doc = @"
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="$description">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2214%22 font-size=%2214%22>&#128197;</text></svg>">
+
+<link rel="canonical" href="$origin/">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+
+<!-- Matched to the page background rather than to the mark, so the Android
+     browser chrome sits flush with the page instead of banding across the top. -->
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#EDF0F4">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#11151B">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="devin jones">
+<meta property="og:url" content="$origin/">
+<meta property="og:title" content="devin jones">
+<meta property="og:description" content="$description">
+<meta property="og:image" content="$origin/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="$cardAlt">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="devin jones">
+<meta name="twitter:description" content="$description">
+<meta name="twitter:image" content="$origin/og.png">
+<meta name="twitter:image:alt" content="$cardAlt">
 $head
 </head>
 <body>
