@@ -190,9 +190,23 @@
   .frame img { max-width: 100%; max-height: 100%; display: block; }
   .frame svg { width: 100%; height: 100%; }
 
-  .detail { padding-top: 1.1rem; min-height: 12rem; }
-  .detail > div { display: none; }
-  .detail > div[data-on="true"] { display: block; animation: rise .3s ease both; }
+  /* The second hover oscillation, and the reason it survived the first fix.
+     The panes differ in height by ~270px. If only the active one takes up space,
+     hovering a project changes the height of this column, and therefore of the
+     document. A reader who is scrolled near the bottom is sitting at maxScroll
+     (docHeight - viewportHeight); shrink the document and the browser clamps the
+     scroll position upward, which slides the index rows DOWN under a pointer that
+     has not moved. A neighbouring row takes the hover, its pane resizes the page
+     again, and the two trade places for as long as the pointer sits still.
+
+     So every pane occupies the same grid cell and the container is permanently as
+     tall as the tallest one. Costs some empty space under the shorter entries and
+     buys a document height that never changes. Do NOT swap this back to display
+     none/block, and do not replace it with a min-height - a hardcoded height goes
+     stale the moment the copy changes, which is how this came back. */
+  .detail { padding-top: 1.1rem; display: grid; }
+  .detail > div { grid-area: 1 / 1; visibility: hidden; }
+  .detail > div[data-on="true"] { visibility: visible; animation: rise .3s ease both; }
   .detail .what {
     color: var(--ink);
     font-family: var(--sans);
@@ -261,7 +275,12 @@
     .frame img { max-height: 62vh; }
     .frame svg { height: 46vw; }
 
-    .detail { min-height: 0; }
+    /* Back to normal flow on a phone. There is no hover to oscillate here, and
+       reserving the height of the tallest pane would leave a screenful of blank
+       under the short ones. */
+    .detail { display: block; }
+    .detail > div { visibility: visible; display: none; }
+    .detail > div[data-on="true"] { display: block; }
 
     /* No hover on touch, so the selected row needs to be visible on its own,
        and the indent must not come from padding - that changes row height. */
